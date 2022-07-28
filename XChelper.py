@@ -32,12 +32,12 @@ class F5xcSession(Session):
             }
         }
         try:
-            resp = self.post('/api/web/namespaces', json=payload)
+            resp = self.post('/api/config/dns/namespaces/system/dns_zones', json=payload)
             resp.raise_for_status()
         except Exception as e:
             raise XCerr(e)
 
-    def replace_zone(self, zoneName, xcRecords):
+    def update_zone(self, zoneName, xcRecords):
         payload = {
             'metadata': {
                 'name': zoneName,
@@ -50,7 +50,7 @@ class F5xcSession(Session):
             }
         }
         try:
-            resp = self.put('/api/web/namespaces', json=payload)
+            resp = self.put(f'/api/config/dns/namespaces/system/dns_zones/{zoneName}', json=payload)
             resp.raise_for_status()
         except Exception as e:
             raise XCerr(e)

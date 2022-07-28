@@ -17,9 +17,15 @@ def parse_zonefile(zone_file) -> list:
     except Exception as e:
         raise ParseErr('Unable to parse zone file content.')
 
+def normalize_ttl(rec) -> int:
+    '''XC API requires all ttls to be >=60'''
+    if rec['ttl'] < 60:
+        return 60
+    return rec['ttl']
+
 def a_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'a_record': {
             'name': rec['name'],
             'values': [
@@ -31,7 +37,7 @@ def a_record(rec):
 
 def aaaa_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'aaaa_record': {
             'name': rec['name'],
             'values': [
@@ -43,8 +49,9 @@ def aaaa_record(rec):
 
 def alias_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'alias_record': {
+            'name': None,
             'value': rec['rdata']['value']
         }  
     }
@@ -52,7 +59,7 @@ def alias_record(rec):
 
 def caa_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'caa_record': {
             'name': rec['name'],
             'values': [
@@ -68,7 +75,7 @@ def caa_record(rec):
 
 def cname_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'cname_record': {
             'name': rec['name'],
             'value': rec['rdata']['value']
@@ -78,7 +85,7 @@ def cname_record(rec):
 
 def mx_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'mx_record': {
             'name': rec['name'],
             'values': [
@@ -93,7 +100,7 @@ def mx_record(rec):
 
 def ns_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'ns_record': {
             'name': rec['name'],
             'values': [
@@ -105,7 +112,7 @@ def ns_record(rec):
 
 def ptr_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'ptr_record': {
             'name': rec['name'],
             'values': [
@@ -117,7 +124,7 @@ def ptr_record(rec):
 
 def srv_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'srv_record': {
             'name': rec['name'],
             'values': [
@@ -134,12 +141,12 @@ def srv_record(rec):
 
 def txt_record(rec):
     record = {
-        'ttl': rec['ttl'],
+        'ttl': normalize_ttl(rec),
         'txt_record': {
             'name': rec['name'],
-            'values': {
+            'values': [
                 rec['rdata']['value']
-            }
+            ]
         }            
     }
     return record
