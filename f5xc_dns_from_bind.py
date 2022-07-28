@@ -32,7 +32,146 @@ class Perror(Error):
 class Processed:
     def __init__(self, recs, unproc):
         self.recs = recs
-        self.unproc = unproc  
+        self.unproc = unproc
+
+class XCrr_set_group:
+    def __init__(self):
+        self.records = []
+        self.unprocessed_records = []
+        self._xc_supported_types = {
+            'A': 'a_record',
+            'AAAA': 'aaaa_record',
+            'ALIAS': 'alias_record',
+            'CAA': 'caa_record',
+            'CNAME': 'cname_record',
+            'MX': 'mx_record',
+            'NS': 'ns_record',
+            'PTR': 'ptr_record',
+            'SRV': 'srv_record',
+            'TXT': 'txt_record'
+        }
+
+    def add_a(self, rec):
+        record = {
+            'a_record': {
+                'name': rec['name'],
+                'values': [
+                    rec['rdata']['value']
+                ]
+            }
+        }
+        self.records.append(self._add_ttl(rec, record))
+
+    def add_aaaa(self, rec):
+        record = {
+           'aaaa_record': {
+                'name': rec['name'],
+                'values': [
+                    rec['rdata']['value']
+                ]
+            }
+        }
+        self.records.append(self._add_ttl(rec, record))
+
+    def add_alias(self, rec):
+        record = {
+           'alias_record': {
+                'value': rec['rdata']['value']
+            }  
+        }
+        self.records.append(self._add_ttl(rec, record))
+
+    def add_caa(self, rec):
+        record = {
+            'caa_record': {
+                'name': rec['name'],
+                'values': [
+                    {
+                        'flags': rec['rdata']['flag'],
+                        'tag': rec['rdata']['tag'],
+                        'value': rec['rdata']['value']
+                    }
+                ]
+            }            
+        }
+        self.records.append(self._add_ttl(rec, record))
+
+    def add_cname(self, rec):
+        record = {
+          'cname_record': {
+                'name': rec['name'],
+                'value': rec['rdata']['value']
+            }            
+        }
+        self.records.append(self._add_ttl(rec, record))
+
+    def add_mx(self, rec):
+        record = {
+            'mx_record': {
+                'name': rec['name'],
+                'values': [
+                    {
+                        'domain': rec['rdata']['host'],
+                        'priority': rec['rdata']['priority']
+                    }
+                ]
+            } 
+        }
+        self.records.append(self._add_ttl(rec, record))
+
+    def add_ns(self, rec):
+        record = {
+            'ns_record': {
+                'name': rec['name'],
+                'values': [
+                    rec['rdata']['value']
+                ]
+            }
+        }
+        self.records.append(self._add_ttl(rec, record))
+
+    def add_ptr(self, rec):
+        record = {
+            'ptr_record': {
+                'name': rec['name'],
+                'values': [
+                    rec['rdata']['value']
+                ]
+            }            
+        }
+        self.records.append(self._add_ttl(rec, record))
+
+    def add_srv(self, rec):
+        record = {
+            'srv_record': {
+                'name': rec['name'],
+                'values': [
+                    {
+                        'port': rec['rdata']['port'],
+                        'priority': rec['rdata']['priority'],
+                        'target': rec['rdata']['host'],
+                        'weight': rec['rdata']['weight']
+                    }
+                ]
+            }            
+        }
+        self.records.append(self._add_ttl(rec, record))
+
+    def add_txt(self, rec):
+        record = {
+            'txt_record': {
+                'name': rec['name'],
+                'values': {
+                    rec['rdata']['value']
+                }
+            }            
+        }
+        self.records.append(self._add_ttl(record))
+
+    def _add_ttl(rec, record):
+        record['ttl'] = rec['ttl']
+        return record
+
 
 class F5xcSession(Session):
     def __init__(self, token, prefix_url=None, *args, **kwargs):
